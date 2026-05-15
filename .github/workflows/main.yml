@@ -18,7 +18,8 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+        # libtinfo5 এর বদলে libtinfo6 এবং নতুন ভার্সনগুলো যোগ করা হয়েছে
+        sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses6 libncursesw6 libtinfo6 cmake libffi-dev libssl-dev
         pip install --upgrade pip
         pip install buildozer cython==0.29.33 kivy
 

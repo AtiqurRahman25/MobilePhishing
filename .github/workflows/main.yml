@@ -7,10 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      # গিটহাবের লেটেস্ট রুল অনুযায়ী Node24 এনাবল করে দিচ্ছি
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
     steps:
     - uses: actions/checkout@v4
 
@@ -24,12 +20,12 @@ jobs:
         sudo apt update
         sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
         pip install --upgrade pip
-        pip install buildozer cython==0.29.33 kivy requests pyjnius
+        pip install buildozer cython==0.29.33 kivy
 
     - name: Build with Buildozer
       run: |
-        # আগের কোনো অবশিষ্টাংশ থাকলে ক্লিন করে নতুন বিল্ড শুরু করবে
-        buildozer android clean
+        # ক্ল্লিন বিল্ড নিশ্চিত করা
+        rm -rf .buildozer/
         yes | buildozer -v android debug
       
     - name: Upload APK

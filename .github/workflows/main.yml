@@ -20,18 +20,19 @@ jobs:
         sudo apt update
         sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses6 libncursesw6 libtinfo6 cmake libffi-dev libssl-dev
         pip install --upgrade pip
-        # Cython এর ভার্সনটি আপডেট করা হয়েছে যেন নতুন লিনাক্সে এরর না দেয়
         pip install buildozer cython==0.29.33 kivy requests pyjnius
 
     - name: Build with Buildozer
       run: |
-        # ক্ল্লিন বিল্ড এবং ডিটেইলড লগ অন করা
-        rm -rf .buildozer/
-        # --log_level=2 দিয়ে আমরা আসল এররটা দেখতে পাবো
-        yes | buildozer -v android debug --log_level=2
+        # ক্ল্লিন করা এবং লাইসেন্স আগেভাগেই এক্সেপ্ট করা (Broken Pipe এড়াতে)
+        buildozer android clean
+        mkdir -p ~/.android && touch ~/.android/repositories.cfg
+        
+        # সরাসরি বিল্ড শুরু করা - v (verbose) মোড অন রাখা হলো
+        buildozer -v android debug
       
     - name: Upload APK
-      if: always() # বিল্ড ফেইল করলেও লগ আপলোড করতে হেল্প করবে
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: PhishGuard-APK

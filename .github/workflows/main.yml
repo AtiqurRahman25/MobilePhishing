@@ -18,18 +18,20 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        # libtinfo5 এর বদলে libtinfo6 এবং নতুন ভার্সনগুলো যোগ করা হয়েছে
         sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses6 libncursesw6 libtinfo6 cmake libffi-dev libssl-dev
         pip install --upgrade pip
-        pip install buildozer cython==0.29.33 kivy
+        # Cython এর ভার্সনটি আপডেট করা হয়েছে যেন নতুন লিনাক্সে এরর না দেয়
+        pip install buildozer cython==0.29.33 kivy requests pyjnius
 
     - name: Build with Buildozer
       run: |
-        # ক্ল্লিন বিল্ড নিশ্চিত করা
+        # ক্ল্লিন বিল্ড এবং ডিটেইলড লগ অন করা
         rm -rf .buildozer/
-        yes | buildozer -v android debug
+        # --log_level=2 দিয়ে আমরা আসল এররটা দেখতে পাবো
+        yes | buildozer -v android debug --log_level=2
       
     - name: Upload APK
+      if: always() # বিল্ড ফেইল করলেও লগ আপলোড করতে হেল্প করবে
       uses: actions/upload-artifact@v4
       with:
         name: PhishGuard-APK

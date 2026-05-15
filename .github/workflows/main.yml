@@ -7,6 +7,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # গিটহাবের লেটেস্ট রুল অনুযায়ী Node24 এনাবল করে দিচ্ছি
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
     - uses: actions/checkout@v4
@@ -25,8 +28,9 @@ jobs:
 
     - name: Build with Buildozer
       run: |
-        # লাইসেন্স একসেপ্ট করা এবং বিল্ড শুরু করা
-        yes | buildozer android debug
+        # আগের কোনো অবশিষ্টাংশ থাকলে ক্লিন করে নতুন বিল্ড শুরু করবে
+        buildozer android clean
+        yes | buildozer -v android debug
       
     - name: Upload APK
       uses: actions/upload-artifact@v4

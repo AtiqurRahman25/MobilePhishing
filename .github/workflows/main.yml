@@ -7,6 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
     steps:
     - uses: actions/checkout@v4
 
@@ -18,21 +19,24 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
+        # Ubuntu 24.04 এর জন্য সঠিক লাইব্রেরিগুলো এখানে দেওয়া হয়েছে
         sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses6 libncursesw6 libtinfo6 cmake libffi-dev libssl-dev
         pip install --upgrade pip
         pip install buildozer cython==0.29.33 kivy requests pyjnius
 
     - name: Build with Buildozer
       run: |
-        # ক্ল্লিন করা এবং লাইসেন্স আগেভাগেই এক্সেপ্ট করা (Broken Pipe এড়াতে)
-        buildozer android clean
+        # যদি আগে থেকে বিল্ড ফোল্ডার না থাকে তবে ক্লিন কমান্ড স্কিপ করবে (এরর ফিক্স)
+        if [ -d ".buildozer" ]; then buildozer android clean; fi
+        
+        # এনডিকে লাইসেন্স অটো-একসেপ্ট করা
         mkdir -p ~/.android && touch ~/.android/repositories.cfg
         
-        # সরাসরি বিল্ড শুরু করা - v (verbose) মোড অন রাখা হলো
-        buildozer -v android debug
+        # সরাসরি বিল্ড শুরু করা
+        yes | buildozer -v android debug
       
     - name: Upload APK
-      if: always()
+      if: success() || failure() # বিল্ড ফেইল করলেও লগ চেক করার জন্য আর্টফ্যাক্ট আপলোড করবে
       uses: actions/upload-artifact@v4
       with:
         name: PhishGuard-APK
